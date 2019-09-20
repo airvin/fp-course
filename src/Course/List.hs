@@ -236,7 +236,8 @@ seqOptional :: List (Optional a) -> Optional (List a)
 seqOptional = foldRight (\val acc -> case (val, acc) of
   (_, Empty) -> Empty
   (Empty, _) -> Empty
-  (Full a, Full as) -> )
+  (Full a, Full as) -> Full (a :. as)
+  ) (Full Nil)
 
 -- | Find the first element in the list matching the predicate.
 --
@@ -254,12 +255,10 @@ seqOptional = foldRight (\val acc -> case (val, acc) of
 --
 -- >>> find (const True) infinity
 -- Full 0
-find ::
-  (a -> Bool)
-  -> List a
-  -> Optional a
-find =
-  error "todo: Course.List#find"
+find :: (a -> Bool) -> List a -> Optional a
+find p listA = case (filter p listA) of 
+  (h :. _) -> Full h
+  Nil -> Empty
 
 -- | Determine if the length of the given list is greater than 4.
 --
@@ -274,11 +273,13 @@ find =
 --
 -- >>> lengthGT4 infinity
 -- True
-lengthGT4 ::
-  List a
-  -> Bool
-lengthGT4 =
-  error "todo: Course.List#lengthGT4"
+lengthGT4 :: List a -> Bool
+-- lengthGT4 (_ :. _ :. _ :. _ :. _) = True 
+-- lengthGT4 _ = False
+lengthGT4 listA = case (length (take 4 listA)) of
+  4 -> True
+  _ -> False
+
 
 -- | Reverse a list.
 --
@@ -291,9 +292,7 @@ lengthGT4 =
 -- prop> \x -> let types = x :: List Int in reverse x ++ reverse y == reverse (y ++ x)
 --
 -- prop> \x -> let types = x :: Int in reverse (x :. Nil) == x :. Nil
-reverse ::
-  List a
-  -> List a
+reverse :: List a -> List a
 reverse =
   error "todo: Course.List#reverse"
 
