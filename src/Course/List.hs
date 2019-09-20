@@ -293,8 +293,7 @@ lengthGT4 listA = case (length (take 4 listA)) of
 --
 -- prop> \x -> let types = x :: Int in reverse (x :. Nil) == x :. Nil
 reverse :: List a -> List a
-reverse =
-  error "todo: Course.List#reverse"
+reverse = foldLeft (\acc val -> (val :. Nil) ++ acc) Nil
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
