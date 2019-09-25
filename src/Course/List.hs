@@ -256,9 +256,10 @@ seqOptional = foldRight (\val acc -> case (val, acc) of
 -- >>> find (const True) infinity
 -- Full 0
 find :: (a -> Bool) -> List a -> Optional a
-find p listA = case (filter p listA) of 
-  (h :. _) -> Full h
-  Nil -> Empty
+-- find p listA = case (filter p listA) of 
+--   (h :. _) -> Full h
+--   Nil -> Empty
+find p = foldRight (\a o -> if p a then Full a else o) Empty
 
 -- | Determine if the length of the given list is greater than 4.
 --
@@ -293,7 +294,9 @@ lengthGT4 listA = case (length (take 4 listA)) of
 --
 -- prop> \x -> let types = x :: Int in reverse (x :. Nil) == x :. Nil
 reverse :: List a -> List a
-reverse = foldLeft (\acc val -> (val :. Nil) ++ acc) Nil
+-- reverse = foldRight (\val acc -> (acc ++ (val :. Nil))) Nil
+-- reverse = foldLeft (\acc val -> (val :. acc)) Nil
+reverse = foldLeft (flip (:.)) Nil
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
@@ -303,10 +306,7 @@ reverse = foldLeft (\acc val -> (val :. Nil) ++ acc) Nil
 --
 -- >>> let (x:.y:.z:.w:._) = produce (*2) 1 in [x,y,z,w]
 -- [1,2,4,8]
-produce ::
-  (a -> a)
-  -> a
-  -> List a
+produce :: (a -> a) -> a -> List a
 produce f x = x :. produce f (f x)
 
 -- | Do anything other than reverse a list.
@@ -318,12 +318,8 @@ produce f x = x :. produce f (f x)
 -- prop> \x y -> let types = x :: List Int in notReverse x ++ notReverse y == notReverse (y ++ x)
 --
 -- prop> \x -> let types = x :: Int in notReverse (x :. Nil) == x :. Nil
-notReverse ::
-  List a
-  -> List a
-notReverse =
-  error "todo: Is it even possible?"
-
+notReverse :: List a -> List a
+notReverse = id
 ---- End of list exercises
 
 largeList ::
